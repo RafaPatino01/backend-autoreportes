@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    #myProgress {
+        width: 100%;
+        background-color: #ddd;
+    }
+    
+    #myBar {
+        width: 1%;
+        height: 30px;
+        background-color: #04AA6D;
+    }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="image_src" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpgLFFQwrT5BdbszkAENbkEKoezi6GV-oxU-yXLVD66bq8sjwKQ0vdGfHCByKGH7lrJMg&usqp=CAU" />
+    <link rel="icon" type="image/x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpgLFFQwrT5BdbszkAENbkEKoezi6GV-oxU-yXLVD66bq8sjwKQ0vdGfHCByKGH7lrJMg&usqp=CAU">
+    <title>AutoReportes</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/danfojs@1.1.0/lib/bundle.min.js"></script>
+
+    <style>
+        .hide {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <main role="main" class="flex-shrink-0">
+        <div class="container mt-3">
+            <div class="row">
+                <div class="col-lg-3"></div>
+                <div class="col-lg-6 border border-5 rounded rounded-3 p-3 bg-white shadow-lg">
+                    <div class="row">
+                        <div class="col-6">
+                            <img class="w-100" src="https://www.up.edu.mx/sites/default/files//captura_de_pantalla_2019-02-12_a_las_12.49.38.png" alt="">
+                        </div>
+                        <div class="col-6">
+                            <h1 class="mt-5 mb-0">Auto-Reportes</h1>
+                            <p class="text-secondary">Resumen de las asesorías de la UP</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3"></div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-lg-3"></div>
+                <div class="col-lg-6 border-end border-start border-bottom border-5 rounded rounded-3 p-3 bg-white shadow-lg">
+                    <p class="lead">Selecciona una función:</p>
+                    <div class="row justify-content-center list-group px-3">
+                        <button id="autoreporte-btn" onclick="seleccion('autoreporte')" type="button" class="list-group-item list-group-item-action">• Generar autoreporte</button>
+                        <button id="lista-btn" onclick="seleccion('lista')" type="button" class="list-group-item list-group-item-action">• Obtener lista de asesores</button>
+                        <button id="descargar-btn" onclick="seleccion('descargarCSV')" type="button" class="list-group-item list-group-item-action disabled">• Descargar CSV</button>
+                    </div>
+                </div>
+                <div class="col-lg-3"></div>
+            </div>
+
+            <br>
+
+             <!-- FUNCION DE Autoreportes -->
+            <div class="row hide" id="autoreporte-function">
+                <div class="col-lg-3"></div>
+                <div class="col-lg-6 border-end border-start border-bottom border-5 rounded rounded-3 p-3 bg-white shadow-lg">
+                    <div class="border p-2">
+                        <p class="text-secondary">Ingresa los archivos en CSV</p>
+                        <form id="myForm">
+                            <input type="file" id="csvFile" accept=".csv" multiple="multiple"/>
+                        </form>
+                    </div>
+                    <hr>
+                    <div id="myProgress">
+                        <div id="myBar"></div>
+                    </div>
+                    <hr>
+                    <br>
+                    <button type="button" id="btn" onclick="calcular()" class="btn btn-success my-4">Calcular</button>         
+                </div>
+                <div class="col-lg-3"></div>
+            </div>
+
+            <!-- FUNCION DE LISTA -->
+            <div class="row hide" id="lista-function">
+                <div class="col-lg-3"></div>
+                <div class="col-lg-6 border-end border-start border-bottom border-5 rounded rounded-3 p-3 bg-white shadow-lg">
+                    <form action = "http://127.0.0.1:5000/uploadCSV" method = "post" enctype="multipart/form-data">
+                        <hr>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="border p-2">
+                                    <p class="text-secondary">CSV de asesores del ciclo <u class="text-dark">ANTERIOR</u> </p>
+                                    <input class="form-control" type="file" id="csvFile1" accept=".csv" name="old"/>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border p-2">
+                                    <p class="text-secondary">CSV de asesores del ciclo <u class="text-dark">ACTUAL</u></p>
+                                    <input class="form-control" type="file" id="csvFile2" accept=".csv" name="new"/> 
+                                </div>
+                            </div>
+    
+                            <br>
+                        </div>
+                        <hr>
+                        <p><input  class="btn btn-success" type = "submit" value = "Enviar" /></p>
+                    </form>   
+                    
+                </div>
+                <div class="col-lg-3"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function seleccion(name){
+            switch(name){
+                case "autoreporte":
+                    document.getElementById("autoreporte-btn").classList.add("active");
+                    document.getElementById("lista-btn").classList.remove("active");
+
+                    document.getElementById("lista-function").classList.add("hide")
+                    document.getElementById("autoreporte-function").classList.remove("hide");
+                    break;
+                case "lista":
+                    document.getElementById("lista-btn").classList.add("active");
+                    document.getElementById("autoreporte-btn").classList.remove("active");
+
+                    document.getElementById("autoreporte-function").classList.add("hide")
+                    document.getElementById("lista-function").classList.remove("hide");
+                    break;
+            }
+        }
+    </script>
+
+  <script>
+
+    const myForm = document.getElementById("myForm")
+    const csvFile = document.getElementById("csvFile")
+
+    // CSV to ARRAY
+    function csvToArray(str, delimiter = ",") {
+      const headers = str.slice(0, str.indexOf("\n")).split(delimiter)
+      const rows = str.slice(str.indexOf("\n") + 1).split("\n")
+      const arr = rows.map(function (row) {
+
+
+        let values = row.split(delimiter)
+
+        // Limpiar errores en CSV
+        values.splice(6, 1); 
+        values.splice(8, 1);
+        
+        values[5] = String(values[5]).slice(1)
+        values[7] = String(values[7]).slice(1)
+        values[11] = parseInt(values[11])
+
+        const el = headers.reduce(function (object, header, index) {
+          object[header] = values[index]
+          return object
+        }, {})
+        return el
+      });
+      return arr
+    }
+
+    let datos = []
+    let facultades_names = []
+
+    // leer los datos y llenar el arreglo
+    myForm.addEventListener("change", function (e) {
+        e.preventDefault();
+
+        var files = e.target.files
+        
+        // Loop through files
+        for (i = 0; i < files.length; i++)
+        {
+        
+            const input = csvFile.files[i];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const text = e.target.result;
+                const data = csvToArray(text);
+
+                facultades_names.push(input.name)
+                datos.push(data)
+            };
+            
+            reader.readAsText(input);
+        }
+    });
+    
+    function cleanArr(datos){
+        let clean = []
+        let j = 0
+        while (j < datos.length){
+            clean.push(datos[j])
+            //detener
+            if(datos[j]["INSTITUTION"] == "textbox13"){
+                break
+            }
+            j++
+        }
+        clean.pop()
+        clean.pop()
+
+        return clean
+    }
+
+    function calcular(){
+
+        //Datos resumen
+        let n_asesores = []
+        let n_alumnos = []
+        let n_asesorias_ciclo = {}
+        let n_atendidos_ciclo = {}
+        let n_asesorias_mes = {}
+        let n_atendidos_mes = {}
+        let total_atendidos = []
+        let total_asesorias = []
+        let asesoriasXalumno = {}
+        let total_asesoriasXalumno = []
+        let asesoriasXalumno_real = {}
+        let total_asesoriasXalumno_real = []
+        let alumnos_sin_asesoria = []
+        let asesores_sin_asesoria = []
+        let gMeses
+
+        // Nombres de los asesores malos y alumnos que no han recibido asesoria
+        let asesores_bad = []
+        let asesorados_bad = []
+        
+        let clean_datos = []
+
+        // LIMPIAR ARREGLO
+        for(let i=0; i<datos.length; i++){
+            clean_datos.push(cleanArr(datos[i]))
+        }
+
+        console.log(clean_datos)
+
+        // Para cada facultad
+        for(let i=0; i<clean_datos.length; i++){
+            
+            let nombres_asesores_bad = []
+            let nombres_alumnos_bad = []
+
+            df = new dfd.DataFrame(clean_datos[i])
+            df.rename({ "CRSE_GRADE_INPUT\r": "INPUT" }, { inplace: true })
+            
+            // Obtener número de asesores
+            let unique = df.nUnique(axis=0)
+
+            n_asesores.push(unique.iat(5))
+            n_alumnos.push(unique.iat(6))
+
+
+            // Obtener ciclos en csv
+            const ciclos = new Set()
+            for(let j=0; j < df["ADMIT_TERM"].count(); j++){
+                ciclos.add(df["ADMIT_TERM"].iat(j))
+            }
+            // Asesorías por ciclo 
+            let dict = {}
+            for(let item of ciclos){
+                let ciclo_df = df.query(df["ADMIT_TERM"].eq(item))
+                let sum_ciclo = ciclo_df.sum({axis: 0}) //after query
+
+                dict[item] = sum_ciclo.tail(1).iat(0)
+            }
+            n_asesorias_ciclo[i] = dict
+
+            // Nombres alumnos
+            const alumnos = new Set()
+            for(let j=0; j < df["NAME_ALUMNOS"].count(); j++){
+                alumnos.add(df["NAME_ALUMNOS"].iat(j))
+            }
+
+            // Alumnos atendidos por ciclo
+            dict = {}
+            for(let item of ciclos){
+                let atendidos_ciclo = 0
+                
+                for(let alumno of alumnos){
+                    let atendidos_df = df.query(df["ADMIT_TERM"].eq(item).and(df["NAME_ALUMNOS"].eq(alumno)))["INPUT"].ge(1)
+
+                    // Si tuvo por lo menos una asesoría
+                    for(let j = 0; j<atendidos_df.count(); j++){
+                        if(atendidos_df.iat(j) == true){
+                            atendidos_ciclo++
+                            break
+                        }
+                    }
+                }
+
+                dict[item] = atendidos_ciclo //Atendidos por ciclo
+            }
+            n_atendidos_ciclo[i] = dict
+
+
+
+            // Obtener meses en el csv --------
+            // Para cada fila
+            let meses = new Set()
+            for(let j=0; j < df["DESCR"].count(); j++){
+                if(df["DESCR"].iat(j).includes("Asesoría")){
+                    meses.add(df["DESCR"].iat(j))
+                }
+            }
+
+            // Ordenar los meses
+            let meses_array = Array.from(meses)
+            var all_months = ['Asesoría Enero','Asesoría Febrero','Asesoría Marzo', 'Asesoría Abril','Asesoría Mayo','Asesoría Junio','Asesoría Julio','Asesoría Agosto','Asesoría Septiembre','Asesoría Octubre','Asesoría Noviembre','Asesoría Diciembre'];
+            meses_array.sort(function(a,b){
+                return all_months.indexOf(a) > all_months.indexOf(b);
+            });
+            meses = new Set(meses_array);
+
+            // ???
+            if(i == 0){gMeses = meses}
+
+            // Asesorías dadas cada mes
+            dict = {}
+            for(let item of meses){
+                let mes_df = df.query(df["DESCR"].eq(item))
+                let sum_mes = mes_df.sum({axis: 0}) //after query
+
+                
+                dict[item] = sum_mes.tail(1).iat(0)
+            }
+
+            n_asesorias_mes[i] = dict
+
+            //ASESORIAS TOTALES
+            total_asesorias.push(df["INPUT"].sum({axis: 0}))
+            
+            //ALUMNOS ATENDIDOS cada mes
+            dict = {}
+            for(let item of meses){
+                let mes_df = df.query(df["DESCR"].eq(item))
+
+                let atendidos_df = mes_df["INPUT"].ge(1)
+
+                let atendidos_mes = 0
+                for(let j = 0; j<atendidos_df.count(); j++){
+                    if(atendidos_df.iat(j) == true){
+                        atendidos_mes++
+                    }
+                }
+
+                dict[item] = atendidos_mes
+
+            }
+            n_atendidos_mes[i] = dict
+            
+
+            // Alumnos sin asesoría
+            let count = 0
+            for(let item of alumnos){
+                let alumno_df = df.query(df["NAME_ALUMNOS"].eq(item))
+                let suma_asesorias = alumno_df.sum({axis: 0})
+
+                //ALUMNOS CON 0 Asesorías
+                if(suma_asesorias.tail(1).iat(0) == 0){
+                    nombres_alumnos_bad.push(alumno_df["ALUMNOS"].iat(0) + " " + alumno_df["NAME_ALUMNOS"].iat(0))
+                    count++
+                }
+            }
+            alumnos_sin_asesoria.push(count)
+            total_atendidos.push(n_alumnos[i] - alumnos_sin_asesoria[i])
+
+            // RATIO de ASESORIAS por ALUMNO
+            dict = {}
+            for(let item of meses){
+                if(n_alumnos[i] > 0){
+                    dict[item] = toFixedTrunc(n_asesorias_mes[i][item]/n_alumnos[i],2)
+                }
+            }
+            asesoriasXalumno[i] = dict
+            total_asesoriasXalumno.push(toFixedTrunc(total_asesorias[i]/n_alumnos[i],2))
+
+            // RATIO de ASESORIAS por ALUMNO realmente atendido
+            dict = {}
+            for(let item of meses){
+                if(n_alumnos[i] > 0){
+                    dict[item] = toFixedTrunc(n_asesorias_mes[i][item]/n_atendidos_mes[i][item],2)
+                }
+            }
+            asesoriasXalumno_real[i] = dict
+            total_asesoriasXalumno_real.push(toFixedTrunc(total_asesorias[i]/total_atendidos[i],2))
+
+            // Asesores sin asesoría
+            const asesores = new Set()
+            for(let j=0; j < df["NAME"].count(); j++){
+                asesores.add(df["NAME"].iat(j))
+            }
+            count = 0
+            for(let item of asesores){
+                let asesores_df = df.query(df["NAME"].eq(item))
+                let suma_asesorias = asesores_df.sum({axis: 0})
+
+                //ALUMNOS CON 0 Asesorías
+                if(suma_asesorias.tail(1).iat(0) == 0){
+                    nombres_asesores_bad.push(asesores_df["EMPLID1"].iat(0) + " " + asesores_df["NAME"].iat(0))
+                    count++
+                }
+            }
+            asesores_sin_asesoria.push(count)
+
+            asesorados_bad.push(nombres_alumnos_bad)
+            asesores_bad.push(nombres_asesores_bad)
+        }
+
+        //Animación Loading
+        let i = 0
+        if (i == 0) {
+            i = 1;
+            var elem = document.getElementById("myBar");
+            var width = 1;
+            var id = setInterval(frame, 10);
+            function frame() {
+                if (width >= 100) {
+                    clearInterval(id);
+                    i = 0;
+                } else {
+                    width++;
+                    elem.style.width = width + "%";
+                }
+            }
+        }
+
+        //Preparar CSV -----------------------
+
+        let head = ["","",""]
+        let empty = ["","",""]
+
+        let titles = ["Número de asesorias","Número de alumnos atendidos","Número de asesorías/alumnos","Número de asesorías /alumnos realmente atendidos"]
+        for(let j=0; j<4; j++){
+            head.push(titles[j])
+            for(let item of gMeses){
+                head.push("")
+            }
+        }
+        head.push("Número de alumnos que no han recibido asesoría")
+        head.push("Número de asesores qué no han visto asesorados")
+
+        let sheet = [head,
+                    ["Facultad", "Num Asesores", "Num Asesorados"]]
+                    
+        for(let j=0; j<4; j++){
+            for(let item of gMeses){
+                sheet[1].push(item.replace("Asesoría ", "") )
+            }
+            sheet[1].push("Total")
+        }
+        sheet[1].push("-")
+        sheet[1].push("-")
+
+        // Para cada facultad
+        let json_data = [n_asesorias_mes,n_atendidos_mes,asesoriasXalumno,asesoriasXalumno_real]
+        let totales_data = [total_asesorias, total_atendidos, total_asesoriasXalumno, total_asesoriasXalumno_real]
+
+        let aux = []
+        for(let i=0; i<clean_datos.length; i++){
+
+            aux = [facultades_names[i], n_asesores[i], n_alumnos[i]]
+
+            for(let j=0; j<4; j++){
+                for(let mes of gMeses){
+                    if(json_data[j][i][mes] != undefined)
+                    {
+                        aux.push(json_data[j][i][mes]) 
+                    }
+                    else {
+                        aux.push(0)
+                    }
+                }
+                if(totales_data[j][i] != undefined){ 
+                    aux.push(totales_data[j][i]) 
+                }
+                else {
+                        aux.push(0)
+                }
+            }
+            aux.push(alumnos_sin_asesoria[i])
+            aux.push(asesores_sin_asesoria[i])
+
+            sheet.push(aux)
+        }
+
+        //Tabla de asesores malos
+        sheet.push(empty)
+        sheet.push(empty)
+        sheet.push(["Lista asesores que no han dado asesoría"])
+
+        //Para cada facultad
+        let extra_row = []
+        for(let i=0; i<clean_datos.length; i++){
+            extra_row = []
+            extra_row.push(facultades_names[i])
+
+            //para cada asesor malo de cada facultad
+            for(let j=0; j<asesores_bad[i].length; j++){
+                extra_row.push(asesores_bad[i][j])
+            }
+            sheet.push(extra_row)
+        }
+
+        //Tabla de alumnos sin asesoría
+        sheet.push(empty)
+        sheet.push(empty)
+        sheet.push(["Lista alumnos que no han recibido asesoría"])
+
+        //Para cada facultad
+        for(let i=0; i<clean_datos.length; i++){
+            extra_row = []
+            extra_row.push(facultades_names[i])
+
+            //para cada alumno sin asesoría de cada facultad
+            for(let j=0; j<asesorados_bad[i].length; j++){
+                extra_row.push(asesorados_bad[i][j])
+            }
+            sheet.push(extra_row)
+        }
+
+        // Tablas por ciclo ---------------------
+        sheet.push(empty)
+        sheet.push(empty)
+
+        let aux_row = []
+
+        //Cada fac
+        for(let i=0; i<clean_datos.length; i++){
+            aux_row = [facultades_names[i]]
+
+            titles = ["Asesorías por ciclo", "Alumnos atendidos por ciclo"]
+            for(let j=0; j<2; j++){
+                aux_row.push(titles[j])
+                for (let k=1; k<Object.keys(n_asesorias_ciclo[i]).length; k++){
+                    if(!Object.keys(n_asesorias_ciclo[i])[k].includes("Ases")){
+                        aux_row.push("")
+                    }
+                }
+            }
+            sheet.push(aux_row)
+
+            aux_row = [""]
+            for(let j=0; j<2; j++){
+                for (var key in n_asesorias_ciclo[i]){
+                    if(!key.includes("Ases")){
+                        aux_row.push(key);
+                    }
+                }
+            }
+            sheet.push(aux_row)
+
+            aux_row = [""]
+            for (var key in n_asesorias_ciclo[i]){
+                if(!key.includes("Ases")){
+                    aux_row.push(n_asesorias_ciclo[i][key]);
+                }
+            }
+            for (var key in n_atendidos_ciclo[i]){
+                if(!key.includes("Ases")){
+                    aux_row.push(n_atendidos_ciclo[i][key]);
+                }
+            }
+            sheet.push(aux_row)
+            
+
+            sheet.push(empty)
+        }
+
+        
+        //EXPORTAR ARCHIVO
+        var dateObj = new Date();
+        var month = dateObj.getUTCMonth() + 1; //months from 1-12
+        var day = dateObj.getUTCDate();
+        var year = dateObj.getUTCFullYear();
+
+        newdate = day + "-" + month + "-" + year;
+
+        exportToCsv("Reporte Asesorías "+newdate+".csv", sheet)
+
+    }
+
+    function exportToCsv(filename, rows) {
+    var processRow = function (row) {
+        var finalVal = '';
+        for (var j = 0; j < row.length; j++) {
+            var innerValue = row[j] === null ? '' : toNormalForm(row[j].toString());
+            if (row[j] instanceof Date) {
+                innerValue = row[j].toLocaleString();
+            };
+            var result = innerValue.replace(/"/g, '""');
+            if (result.search(/("|,|\n)/g) >= 0)
+                result = '"' + result + '"';
+            if (j > 0)
+                finalVal += ',';
+            finalVal += result;
+        }
+        return finalVal + '\n';
+    };
+
+    var csvFile = '';
+    for (var i = 0; i < rows.length; i++) {
+        csvFile += processRow(rows[i]);
+    }
+
+    var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+    if (navigator.msSaveBlob) { // IE 10+
+        navigator.msSaveBlob(blob, filename);
+    } else {
+        var link = document.createElement("a");
+        if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+}
+
+function toNormalForm(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+function toFixed(x) {
+  if (Math.abs(x) < 1.0) {
+    let e = parseInt(x.toString().split('e-')[1]);
+    if (e) {
+        x *= Math.pow(10,e-1);
+        x = '0.' + (new Array(e)).join('0') + x.toString().substring(2);
+    }
+  } else {
+    let e = parseInt(x.toString().split('+')[1]);
+    if (e > 20) {
+        e -= 20;
+        x /= Math.pow(10,e);
+        x += (new Array(e+1)).join('0');
+    }
+  }
+  return x;
+}
+function toFixedTrunc(x, n) {
+    x = toFixed(x) 
+
+    // From here on the code is the same than the original answer
+    const v = (typeof x === 'string' ? x : x.toString()).split('.');
+    if (n <= 0) return v[0];
+    let f = v[1] || '';
+    if (f.length > n) return `${v[0]}.${f.substr(0,n)}`;
+    while (f.length < n) f += '0';
+    return `${v[0]}.${f}`
+}
+
+  </script>
+
+</body>
+
+</html>
