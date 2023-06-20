@@ -41,7 +41,7 @@
                 <div class="col-lg-6 border border-5 rounded rounded-3 p-3 bg-white shadow-lg">
                     <div class="row">
                         <div class="col-6">
-                            <img class="w-100" src="https://www.up.edu.mx/sites/default/files//captura_de_pantalla_2019-02-12_a_las_12.49.38.png" alt="">
+                            <img class="w-50 py-3 ps-5" src="https://pbs.twimg.com/profile_images/1155746663010656256/BcdCJ0A4_400x400.png" alt="">
                         </div>
                         <div class="col-6">
                             <h1 class="mt-5 mb-0">Auto-Reportes</h1>
@@ -223,6 +223,7 @@
         let n_asesores = []
         let n_alumnos = []
         let n_asesorias_ciclo = {}
+        let n_asesorias_ciclo_mes = {}
         let n_atendidos_ciclo = {}
         let n_asesorias_mes = {}
         let n_atendidos_mes = {}
@@ -280,6 +281,49 @@
             }
             n_asesorias_ciclo[i] = dict
 
+
+            // Obtener meses en el csv --------
+            // Para cada fila
+            let meses = new Set()
+            for(let j=0; j < df["DESCR"].count(); j++){
+                if(df["DESCR"].iat(j).includes("Asesoría")){
+                    meses.add(df["DESCR"].iat(j))
+                }
+            }
+
+            // Ordenar los meses
+            let meses_array = Array.from(meses)
+            var all_months = ['Asesoría Enero','Asesoría Febrero','Asesoría Marzo', 'Asesoría Abril','Asesoría Mayo','Asesoría Junio','Asesoría Julio','Asesoría Agosto','Asesoría Septiembre','Asesoría Octubre','Asesoría Noviembre','Asesoría Diciembre'];
+            meses_array.sort(function(a,b){
+                return all_months.indexOf(a) > all_months.indexOf(b);
+            });
+            meses = new Set(meses_array);
+
+            // ???
+            if(i == 0){gMeses = meses}
+
+            
+            // Asesorías por ciclo y mes
+            dict = {}
+            for(let item of ciclos){
+                let temporal_dict = {}
+                for(let mes of gMeses){
+                    let ciclo_df = df.query(df["ADMIT_TERM"].eq(item)
+                    .and(df["DESCR"].eq(mes))
+                    .and(df["INPUT"].eq(1))
+                    )
+                    
+                    if(ciclo_df.shape[0] > 0){
+                        temporal_dict[mes] = ciclo_df.shape[0]
+                    }
+                    
+                }
+
+                dict[item] = temporal_dict
+            }
+
+            n_asesorias_ciclo_mes[i] = dict
+
             // Nombres alumnos
             const alumnos = new Set()
             for(let j=0; j < df["NAME_ALUMNOS"].count(); j++){
@@ -307,27 +351,6 @@
             }
             n_atendidos_ciclo[i] = dict
 
-
-
-            // Obtener meses en el csv --------
-            // Para cada fila
-            let meses = new Set()
-            for(let j=0; j < df["DESCR"].count(); j++){
-                if(df["DESCR"].iat(j).includes("Asesoría")){
-                    meses.add(df["DESCR"].iat(j))
-                }
-            }
-
-            // Ordenar los meses
-            let meses_array = Array.from(meses)
-            var all_months = ['Asesoría Enero','Asesoría Febrero','Asesoría Marzo', 'Asesoría Abril','Asesoría Mayo','Asesoría Junio','Asesoría Julio','Asesoría Agosto','Asesoría Septiembre','Asesoría Octubre','Asesoría Noviembre','Asesoría Diciembre'];
-            meses_array.sort(function(a,b){
-                return all_months.indexOf(a) > all_months.indexOf(b);
-            });
-            meses = new Set(meses_array);
-
-            // ???
-            if(i == 0){gMeses = meses}
 
             // Asesorías dadas cada mes
             dict = {}
@@ -581,6 +604,73 @@
             sheet.push(empty)
         }
 
+        // ASESORIAS X CICLO Y MES ---------------------
+        sheet.push(empty)
+
+        aux_row = []
+        
+        //Cada fac
+        for(let i=0; i<clean_datos.length; i++){
+            aux_row = [facultades_names[i]]
+            sheet.push(aux_row)
+            
+            // Para cada ciclo
+            Object.keys(n_asesorias_ciclo[i]).forEach(ciclo => {
+                aux_row = [" "]
+                
+                if(!ciclo.includes("Asesoría")){
+
+
+                    aux_row.push("Asesorías "+ciclo)
+                    sheet.push(aux_row)
+
+                    aux_row = [" "]
+
+                    // Para cada mes
+                    for(let item of gMeses){
+                        aux_row.push(item.replaceAll("Asesoría", "")) 
+                    }
+                    sheet.push(aux_row)
+
+
+                    aux_row = [" "]
+                    for(let item of gMeses){
+                        console.log()
+                        if(n_asesorias_ciclo_mes[i][ciclo][item] != undefined){
+                            aux_row.push(n_asesorias_ciclo_mes[i][ciclo][item]) 
+                        }
+                        else {
+                            aux_row.push(0)
+                        }
+                        
+                    }
+
+                    sheet.push(aux_row)
+                }
+                
+
+                
+
+            })
+
+            
+            
+        }
+
+        /*
+        for(let i=0; i<clean_datos.length; i++){
+            aux_row = [facultades_names[i]]
+
+            titles = ["Asesorías ", "Alumnos atendidos por "]
+            for(let j=0; j<2; j++){
+                aux_row.push(titles[j]+Object.keys(n_asesorias_ciclo[i])
+                for (let k=1; k<Object.keys(n_asesorias_ciclo[i]).length; k++){
+                    console.log(n_asesorias_ciclo[i])
+                }
+            }
+            sheet.push(aux_row)
+
+        }*/
         
         //EXPORTAR ARCHIVO
         var dateObj = new Date();
